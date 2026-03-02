@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useStore } from '../store/useStore';
 import { signInWithGoogle } from '../services/auth';
 import AngelMascot from '../components/AngelMascot';
-import { colors } from '../theme/colors';
+import colors from '../theme/colors';
 
 export default function LoadingScreen({ navigation }) {
   const { user, setUser, hydrate, persist } = useStore();

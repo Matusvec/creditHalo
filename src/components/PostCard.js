@@ -7,6 +7,7 @@ import { globalStyles, colors } from '../theme/styles';
 const PostCard = ({ post, onLike, onComment, isOwnPost, liked, comments = [] }) => {
   const [commentText, setCommentText] = useState('');
   const [showComments, setShowComments] = useState(false);
+  if (!post || post.content == null) return null;
 
   const handleAddComment = () => {
     if (commentText.trim()) {
@@ -51,11 +52,13 @@ const PostCard = ({ post, onLike, onComment, isOwnPost, liked, comments = [] }) 
       </View>
       {showComments && (
         <View style={{ marginTop: 12, borderTopWidth: 1, borderTopColor: colors.cardBorder, paddingTop: 12 }}>
-          {displayComments.map((c, i) => (
-            <View key={i} style={{ marginBottom: 4 }}>
-              <Text style={{ fontSize: 12, color: colors.textSecondary }}>{c.author}: {c.text}</Text>
-            </View>
-          ))}
+          {displayComments
+            .filter((c) => c && (c.text != null || c.content != null))
+            .map((c, i) => (
+              <View key={i} style={{ marginBottom: 4 }}>
+                <Text style={{ fontSize: 12, color: colors.textSecondary }}>{c.author}: {c.text ?? c.content ?? ''}</Text>
+              </View>
+            ))}
           <View style={{ flexDirection: 'row', marginTop: 8 }}>
             <TextInput
               style={[globalStyles.input, { flex: 1, marginRight: 8 }]}

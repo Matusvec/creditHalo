@@ -69,7 +69,7 @@ export default function CommunityScreen() {
       </View>
 
       <Text style={[globalStyles.title, { marginBottom: 12 }]}>Feed</Text>
-      {allPosts.map((post) => (
+      {allPosts.filter((p) => p && p.id && p.content != null).map((post) => (
         <PostCard
           key={post.id}
           post={post}

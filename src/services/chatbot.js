@@ -1,5 +1,3 @@
-import OpenAI from 'openai';
-
 const MOCK_RESPONSES = [
   "That's a great goal! Start by checking your current credit score and setting up a budget to track your spending.",
   'Consider paying more than the minimum on high-interest debts first. This can help reduce your overall interest paid.',
@@ -14,6 +12,7 @@ export const sendMessage = async (message) => {
   const apiKey = process.env.EXPO_PUBLIC_OPENAI_API_KEY || process.env.OPENAI_API_KEY;
   if (apiKey) {
     try {
+      const { default: OpenAI } = await import('openai');
       const openai = new OpenAI({ apiKey });
       const completion = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',

@@ -121,7 +121,11 @@ export const useStore = create((set, get) => ({
           streak: parsed.streak ?? 0,
           lastStreakDate: parsed.lastStreakDate ?? null,
           completedLessons: parsed.completedLessons ?? [],
-          goals: parsed.goals ?? [],
+          goals: (parsed.goals ?? []).filter((g) => g && (g.text != null || g.content != null)).map((g) => ({
+            id: g.id,
+            text: g.text ?? g.content ?? '',
+            completed: g.completed ?? false,
+          })),
           posts: parsed.posts ?? [],
           likedPostIds: parsed.likedPostIds ?? {},
           postComments: parsed.postComments ?? {},

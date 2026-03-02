@@ -4,6 +4,7 @@ import { Card, Button } from 'react-native-elements';
 import { globalStyles, colors } from '../theme/styles';
 
 const GoalCard = ({ goal, onComplete }) => {
+  if (!goal || goal.text == null) return null;
   return (
     <Card
       containerStyle={{

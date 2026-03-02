@@ -8,7 +8,12 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import ConfettiCannon from 'react-native-confetti-cannon';
+let ConfettiCannon;
+try {
+  ConfettiCannon = require('react-native-confetti-cannon').default;
+} catch (e) {
+  ConfettiCannon = null;
+}
 import { useStore } from '../store/useStore';
 import { sendMessage } from '../services/chatbot';
 import { GOAL_EXAMPLES } from '../data/mockGoals';
@@ -70,14 +75,16 @@ export default function GoalsScreen() {
         </TouchableOpacity>
 
         <Text style={[globalStyles.title, { marginBottom: 12 }]}>Your Goals</Text>
-        {goals.length === 0 ? (
+        {(!goals || goals.length === 0) ? (
           <View style={globalStyles.card}>
             <Text style={globalStyles.subtitle}>No goals yet. Set your first goal above!</Text>
           </View>
         ) : (
-          goals.map((goal) => (
-            <GoalCard key={goal.id} goal={goal} onComplete={handleCompleteGoal} />
-          ))
+          (goals || [])
+            .filter((g) => g && g.text != null)
+            .map((goal) => (
+              <GoalCard key={goal.id} goal={goal} onComplete={handleCompleteGoal} />
+            ))
         )}
       </ScrollView>
 
@@ -102,13 +109,15 @@ export default function GoalsScreen() {
         </Text>
       </TouchableOpacity>
 
-      <ConfettiCannon
-        ref={(r) => (confettiRef.current = r)}
-        count={150}
-        origin={{ x: -10, y: 0 }}
-        autoStart={false}
-        colors={[colors.primary, colors.gold, colors.background]}
-      />
+      {ConfettiCannon && (
+        <ConfettiCannon
+          ref={(r) => (confettiRef.current = r)}
+          count={100}
+          origin={{ x: -10, y: 0 }}
+          autoStart={false}
+          colors={[colors.primary, colors.gold, colors.background]}
+        />
+      )}
 
       <Modal visible={goalModalVisible} animationType="slide" transparent>
         <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 24 }}>

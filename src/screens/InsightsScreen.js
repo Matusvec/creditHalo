@@ -137,10 +137,10 @@ export default function InsightsScreen() {
       {alerts.length > 0 && (
         <>
           <Text style={[globalStyles.title, { marginTop: 16, marginBottom: 12 }]}>Your Alerts</Text>
-          {alerts.map((a) => (
+          {alerts.filter((a) => a && a.id).map((a) => (
             <View key={a.id} style={[globalStyles.card, { flexDirection: 'row', justifyContent: 'space-between' }]}>
               <View>
-                <Text style={{ fontWeight: '600', color: colors.text }}>{a.name}</Text>
+                <Text style={{ fontWeight: '600', color: colors.text }}>{a.name ?? ''}</Text>
                 <Text style={globalStyles.subtitle}>{a.frequency} • {a.time}</Text>
               </View>
               <TouchableOpacity onPress={() => { removeAlert(a.id); persist(); }}>
