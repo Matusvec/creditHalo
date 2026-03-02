@@ -1,0 +1,16 @@
+export default {
+  primary: '#FDD835',
+  primaryDark: '#F9A825',
+  background: '#FFFACD',
+  backgroundLight: '#FFFDE7',
+  card: '#FFF8E1',
+  cardBorder: '#FFE082',
+  text: '#5D4037',
+  textSecondary: '#8D6E63',
+  textLight: '#A1887F',
+  white: '#FFFFFF',
+  success: '#4CAF50',
+  error: '#E53935',
+  gold: '#FFD54F',
+  goldLight: '#FFECB3',
+};
