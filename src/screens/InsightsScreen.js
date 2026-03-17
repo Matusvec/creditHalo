@@ -1,41 +1,55 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-  TextInput,
-  FlatList,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
 import { useStore } from '../store/useStore';
 import { getAccountAnalysis, openPlaidLink } from '../services/plaid';
-import { globalStyles, colors } from '../theme/styles';
+import { GradientBackground, GlassCard, AnimatedButton, GlassModal } from '../components/ui';
+import { useEntranceAnimation } from '../hooks/useEntranceAnimation';
+import { useHaptic } from '../hooks/useHaptic';
+import colors from '../theme/colors';
+import { radii } from '../theme/tokens';
+
+import LoanCalculator from './insights/LoanCalculator';
+import BudgetTool from './insights/BudgetTool';
+import AlertSetup from './insights/AlertSetup';
+
+function ActionCard({ iconName, title, subtitle, onPress }) {
+  const { trigger } = useHaptic();
+  return (
+    <Pressable onPress={() => { trigger('light'); onPress?.(); }} style={({ pressed }) => [pressed && { opacity: 0.72 }]}>
+      <GlassCard style={styles.actionCard}>
+        <View style={styles.goldAccent} />
+        <View style={styles.actionIconWrap}>
+          <Ionicons name={iconName} size={22} color={colors.primary} />
+        </View>
+        <View style={styles.actionTextWrap}>
+          <Text style={styles.actionTitle}>{title}</Text>
+          <Text style={styles.actionSubtitle}>{subtitle}</Text>
+        </View>
+        <Ionicons name="chevron-forward" size={18} color={colors.textTertiary} />
+      </GlassCard>
+    </Pressable>
+  );
+}
 
 export default function InsightsScreen() {
   const { bankLinked, setBankLinked, addAlert, alerts, removeAlert, persist } = useStore();
+  const { trigger } = useHaptic();
+
   const [analysisVisible, setAnalysisVisible] = useState(false);
   const [analysisResults, setAnalysisResults] = useState([]);
   const [analysisLoading, setAnalysisLoading] = useState(false);
-  const [loanModalVisible, setLoanModalVisible] = useState(false);
-  const [budgetModalVisible, setBudgetModalVisible] = useState(false);
-  const [alertModalVisible, setAlertModalVisible] = useState(false);
+  const [loanVisible, setLoanVisible] = useState(false);
+  const [budgetVisible, setBudgetVisible] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
 
-  const [loanAmount, setLoanAmount] = useState('');
-  const [interestRate, setInterestRate] = useState('');
-  const [loanTerm, setLoanTerm] = useState('');
-  const [monthlyPayment, setMonthlyPayment] = useState(null);
-  const [totalInterest, setTotalInterest] = useState(null);
-
-  const [income, setIncome] = useState('');
-  const [expenses, setExpenses] = useState([{ id: '1', name: '', amount: '' }]);
-  const [totalExpenses, setTotalExpenses] = useState(0);
-  const [difference, setDifference] = useState(null);
-
-  const [alertName, setAlertName] = useState('');
-  const [alertTime, setAlertTime] = useState('09:00');
-  const [alertDay, setAlertDay] = useState('');
-  const [alertFreq, setAlertFreq] = useState('monthly');
+  const headerAnim = useEntranceAnimation(0);
+  const introAnim = useEntranceAnimation(100);
+  const btnAnim = useEntranceAnimation(200);
+  const sectionAnim = useEntranceAnimation(300);
+  const alertsAnim = useEntranceAnimation(450);
 
   const handleRequestAnalysis = async () => {
     setAnalysisLoading(true);
@@ -45,275 +59,112 @@ export default function InsightsScreen() {
     setAnalysisLoading(false);
   };
 
-  const handleLoanCalculate = () => {
-    const P = parseFloat(loanAmount) || 0;
-    const r = (parseFloat(interestRate) || 0) / 100 / 12;
-    const n = (parseFloat(loanTerm) || 0) * 12;
-    if (P > 0 && n > 0) {
-      const M = r > 0 ? (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1) : P / n;
-      const total = M * n;
-      setMonthlyPayment(M.toFixed(2));
-      setTotalInterest((total - P).toFixed(2));
-    }
+  const handleLinkBank = async () => {
+    await openPlaidLink(() => { setBankLinked(true); persist(); }, () => {});
   };
 
-  const handleBudgetCalculate = () => {
-    const inc = parseFloat(income) || 0;
-    const expTotal = expenses.reduce((acc, e) => acc + (parseFloat(e.amount) || 0), 0);
-    setTotalExpenses(expTotal);
-    setDifference((inc - expTotal).toFixed(2));
-  };
-
-  const addExpenseRow = () => {
-    setExpenses((prev) => [...prev, { id: Date.now().toString(), name: '', amount: '' }]);
-  };
-
-  const updateExpense = (id, field, value) => {
-    setExpenses((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, [field]: value } : e))
-    );
-  };
-
-  const handleAddAlert = () => {
-    if (alertName.trim()) {
-      addAlert({
-        name: alertName.trim(),
-        time: alertTime,
-        day: alertDay,
-        frequency: alertFreq,
-      });
-      persist();
-      setAlertName('');
-      setAlertDay('');
-      setAlertModalVisible(false);
-    }
+  const handleAddAlert = (alert) => {
+    addAlert(alert);
+    persist();
   };
 
   return (
-    <ScrollView style={globalStyles.container}>
-      <View style={globalStyles.card}>
-        <Text style={globalStyles.subtitle}>
-          Credit Halo will analyze your bank history to improve your financial habits.
-        </Text>
-      </View>
+    <GradientBackground>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <Animated.View style={headerAnim}>
+            <Text style={styles.screenTitle}>Insights</Text>
+            <Text style={styles.screenSubtitle}>Your financial command center</Text>
+          </Animated.View>
 
-      <TouchableOpacity
-        style={[globalStyles.button, { marginBottom: 16 }]}
-        onPress={handleRequestAnalysis}
-      >
-        <Text style={globalStyles.buttonText}>Request Credit Halo analysis</Text>
-      </TouchableOpacity>
-
-      <Text style={[globalStyles.title, { marginBottom: 12 }]}>Quick Actions</Text>
-
-      <TouchableOpacity
-        style={globalStyles.card}
-        onPress={async () => {
-          await openPlaidLink(() => {
-            setBankLinked(true);
-            persist();
-          }, () => {});
-        }}
-      >
-        <Text style={[globalStyles.title, { fontSize: 18 }]}>Request bank account check</Text>
-        <Text style={globalStyles.subtitle}>Link or verify your bank</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={globalStyles.card} onPress={() => setLoanModalVisible(true)}>
-        <Text style={[globalStyles.title, { fontSize: 18 }]}>Loan calculator</Text>
-        <Text style={globalStyles.subtitle}>Calculate monthly payments</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={globalStyles.card} onPress={() => setBudgetModalVisible(true)}>
-        <Text style={[globalStyles.title, { fontSize: 18 }]}>Budgeting tool</Text>
-        <Text style={globalStyles.subtitle}>Income vs expenses</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={globalStyles.card} onPress={() => setAlertModalVisible(true)}>
-        <Text style={[globalStyles.title, { fontSize: 18 }]}>Set up alerts</Text>
-        <Text style={globalStyles.subtitle}>Payment reminders, bills due</Text>
-      </TouchableOpacity>
-
-      {alerts.length > 0 && (
-        <>
-          <Text style={[globalStyles.title, { marginTop: 16, marginBottom: 12 }]}>Your Alerts</Text>
-          {alerts.filter((a) => a && a.id).map((a) => (
-            <View key={a.id} style={[globalStyles.card, { flexDirection: 'row', justifyContent: 'space-between' }]}>
-              <View>
-                <Text style={{ fontWeight: '600', color: colors.text }}>{a.name ?? ''}</Text>
-                <Text style={globalStyles.subtitle}>{a.frequency} • {a.time}</Text>
+          <Animated.View style={introAnim}>
+            <GlassCard style={styles.introCard}>
+              <View style={styles.introRow}>
+                <Ionicons name="sparkles" size={20} color={colors.primary} style={{ marginRight: 10, marginTop: 1 }} />
+                <Text style={styles.introText}>Credit Halo analyzes your bank history to improve your financial habits and boost your score.</Text>
               </View>
-              <TouchableOpacity onPress={() => { removeAlert(a.id); persist(); }}>
-                <Text style={{ color: colors.error }}>Remove</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </>
-      )}
+            </GlassCard>
+          </Animated.View>
 
-      <Modal visible={analysisVisible} animationType="slide" transparent>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 24 }}>
-          <View style={[globalStyles.card, { backgroundColor: colors.white, maxHeight: '80%' }]}>
-            <Text style={globalStyles.title}>Your Analysis</Text>
-            {analysisLoading ? (
-              <Text style={globalStyles.subtitle}>Analyzing...</Text>
-            ) : (
-              <ScrollView>
-                {analysisResults.map((r, i) => (
-                  <View key={i} style={{ padding: 8, marginBottom: 8, backgroundColor: colors.background, borderRadius: 8 }}>
-                    <Text style={{ color: colors.text }}>• {r}</Text>
+          <Animated.View style={btnAnim}>
+            <AnimatedButton title="Request Credit Halo Analysis" variant="primary" onPress={handleRequestAnalysis} style={{ marginBottom: 28 }} />
+          </Animated.View>
+
+          <Animated.View style={sectionAnim}>
+            <Text style={styles.sectionLabel}>Quick Actions</Text>
+            <ActionCard iconName="business-outline" title="Bank Account Check" subtitle={bankLinked ? 'Account linked' : 'Link or verify your bank'} onPress={handleLinkBank} />
+            <ActionCard iconName="calculator-outline" title="Loan Calculator" subtitle="Calculate monthly payments" onPress={() => setLoanVisible(true)} />
+            <ActionCard iconName="wallet-outline" title="Budgeting Tool" subtitle="Income vs expenses" onPress={() => setBudgetVisible(true)} />
+            <ActionCard iconName="notifications-outline" title="Set Up Alerts" subtitle="Payment reminders, bills due" onPress={() => setAlertVisible(true)} />
+          </Animated.View>
+
+          {alerts.length > 0 && (
+            <Animated.View style={alertsAnim}>
+              <Text style={[styles.sectionLabel, { marginTop: 8 }]}>Your Alerts</Text>
+              {alerts.filter((a) => a && a.id).map((a) => (
+                <GlassCard key={a.id} style={styles.alertCard}>
+                  <View style={styles.goldAccent} />
+                  <View style={styles.alertInfo}>
+                    <Text style={styles.alertName}>{a.name ?? ''}</Text>
+                    <Text style={styles.alertMeta}>{a.frequency} · {a.time}{a.day ? ` · ${a.day}` : ''}</Text>
                   </View>
-                ))}
-              </ScrollView>
-            )}
-            <TouchableOpacity style={[globalStyles.button, { marginTop: 16 }]} onPress={() => setAnalysisVisible(false)}>
-              <Text style={globalStyles.buttonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+                  <Pressable onPress={() => { trigger('light'); removeAlert(a.id); persist(); }} hitSlop={8}>
+                    <Ionicons name="trash-outline" size={18} color={colors.error} />
+                  </Pressable>
+                </GlassCard>
+              ))}
+            </Animated.View>
+          )}
+        </ScrollView>
+      </SafeAreaView>
 
-      <Modal visible={loanModalVisible} animationType="slide" transparent>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 24 }}>
-          <View style={[globalStyles.card, { backgroundColor: colors.white }]}>
-            <Text style={globalStyles.title}>Loan Calculator</Text>
-            <TextInput
-              style={[globalStyles.input, { marginBottom: 12 }]}
-              placeholder="Loan amount ($)"
-              value={loanAmount}
-              onChangeText={setLoanAmount}
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={[globalStyles.input, { marginBottom: 12 }]}
-              placeholder="Interest rate (%)"
-              value={interestRate}
-              onChangeText={setInterestRate}
-              keyboardType="numeric"
-            />
-            <TextInput
-              style={[globalStyles.input, { marginBottom: 12 }]}
-              placeholder="Term (years)"
-              value={loanTerm}
-              onChangeText={setLoanTerm}
-              keyboardType="numeric"
-            />
-            <TouchableOpacity style={[globalStyles.button, { marginBottom: 12 }]} onPress={handleLoanCalculate}>
-              <Text style={globalStyles.buttonText}>Calculate</Text>
-            </TouchableOpacity>
-            {monthlyPayment !== null && (
-              <View style={{ marginBottom: 12 }}>
-                <Text style={globalStyles.subtitle}>Monthly payment: ${monthlyPayment}</Text>
-                <Text style={globalStyles.subtitle}>Total interest: ${totalInterest}</Text>
+      {/* Analysis Modal */}
+      <GlassModal visible={analysisVisible} onClose={() => setAnalysisVisible(false)}>
+        <Text style={styles.modalTitle}>Your Analysis</Text>
+        {analysisLoading ? (
+          <Text style={styles.loadingText}>Analyzing your financial data…</Text>
+        ) : (
+          <ScrollView style={{ maxHeight: 280, marginBottom: 16 }} showsVerticalScrollIndicator={false}>
+            {analysisResults.map((r, i) => (
+              <View key={i} style={styles.analysisRow}>
+                <Ionicons name="checkmark-circle-outline" size={16} color={colors.primary} style={{ marginTop: 2 }} />
+                <Text style={styles.analysisItem}>{r}</Text>
               </View>
-            )}
-            <TouchableOpacity style={globalStyles.button} onPress={() => setLoanModalVisible(false)}>
-              <Text style={globalStyles.buttonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <Modal visible={budgetModalVisible} animationType="slide" transparent>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 24 }}>
-          <ScrollView>
-            <View style={[globalStyles.card, { backgroundColor: colors.white }]}>
-              <Text style={globalStyles.title}>Budget Tool</Text>
-              <TextInput
-                style={[globalStyles.input, { marginBottom: 12 }]}
-                placeholder="Monthly income ($)"
-                value={income}
-                onChangeText={setIncome}
-                keyboardType="numeric"
-              />
-              <Text style={[globalStyles.title, { fontSize: 16, marginBottom: 8 }]}>Expenses</Text>
-              {expenses.map((e) => (
-                <View key={e.id} style={{ flexDirection: 'row', marginBottom: 8 }}>
-                  <TextInput
-                    style={[globalStyles.input, { flex: 1, marginRight: 8 }]}
-                    placeholder="Name"
-                    value={e.name}
-                    onChangeText={(v) => updateExpense(e.id, 'name', v)}
-                  />
-                  <TextInput
-                    style={[globalStyles.input, { width: 80 }]}
-                    placeholder="Amount"
-                    value={e.amount}
-                    onChangeText={(v) => updateExpense(e.id, 'amount', v)}
-                    keyboardType="numeric"
-                  />
-                </View>
-              ))}
-              <TouchableOpacity onPress={addExpenseRow} style={{ marginBottom: 12 }}>
-                <Text style={{ color: colors.primary }}>
-                  + Add expense
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[globalStyles.button, { marginBottom: 12 }]} onPress={handleBudgetCalculate}>
-                <Text style={globalStyles.buttonText}>Calculate</Text>
-              </TouchableOpacity>
-              {difference !== null && (
-                <View style={{ marginBottom: 12 }}>
-                  <Text style={globalStyles.subtitle}>Total expenses: ${totalExpenses}</Text>
-                  <Text style={globalStyles.subtitle}>Income: ${income}</Text>
-                  <Text style={[globalStyles.title, { fontSize: 18 }]}>Difference: ${difference}</Text>
-                </View>
-              )}
-              <TouchableOpacity style={globalStyles.button} onPress={() => setBudgetModalVisible(false)}>
-                <Text style={globalStyles.buttonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
+            ))}
           </ScrollView>
-        </View>
-      </Modal>
+        )}
+        <AnimatedButton title="Close" variant="secondary" onPress={() => setAnalysisVisible(false)} />
+      </GlassModal>
 
-      <Modal visible={alertModalVisible} animationType="slide" transparent>
-        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 24 }}>
-          <View style={[globalStyles.card, { backgroundColor: colors.white }]}>
-            <Text style={globalStyles.title}>Set Up Alert</Text>
-            <TextInput
-              style={[globalStyles.input, { marginBottom: 12 }]}
-              placeholder="e.g. Credit card payment due"
-              value={alertName}
-              onChangeText={setAlertName}
-            />
-            <TextInput
-              style={[globalStyles.input, { marginBottom: 12 }]}
-              placeholder="Time (e.g. 09:00)"
-              value={alertTime}
-              onChangeText={setAlertTime}
-            />
-            <TextInput
-              style={[globalStyles.input, { marginBottom: 12 }]}
-              placeholder="Day (e.g. 15th)"
-              value={alertDay}
-              onChangeText={setAlertDay}
-            />
-            <View style={{ flexDirection: 'row', marginBottom: 12 }}>
-              {['daily', 'weekly', 'monthly'].map((f) => (
-                <TouchableOpacity
-                  key={f}
-                  style={{
-                    padding: 8,
-                    marginRight: 8,
-                    backgroundColor: alertFreq === f ? colors.primary : colors.background,
-                    borderRadius: 8,
-                  }}
-                  onPress={() => setAlertFreq(f)}
-                >
-                  <Text style={globalStyles.buttonText}>{f}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity style={[globalStyles.button, { marginBottom: 12 }]} onPress={handleAddAlert}>
-              <Text style={globalStyles.buttonText}>Add Alert</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setAlertModalVisible(false)}>
-              <Text style={globalStyles.subtitle}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
+      <LoanCalculator visible={loanVisible} onClose={() => setLoanVisible(false)} />
+      <BudgetTool visible={budgetVisible} onClose={() => setBudgetVisible(false)} />
+      <AlertSetup visible={alertVisible} onClose={() => setAlertVisible(false)} onAdd={handleAddAlert} />
+    </GradientBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1 },
+  scroll: { flex: 1 },
+  scrollContent: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 100 },
+  screenTitle: { fontSize: 32, fontWeight: '700', color: colors.text, letterSpacing: 0.35, marginBottom: 4 },
+  screenSubtitle: { fontSize: 15, color: colors.textSecondary, marginBottom: 20 },
+  introCard: { marginBottom: 16 },
+  introRow: { flexDirection: 'row', alignItems: 'flex-start' },
+  introText: { flex: 1, fontSize: 15, color: colors.textSecondary, lineHeight: 22 },
+  sectionLabel: { fontSize: 12, fontWeight: '600', color: colors.textTertiary, letterSpacing: 1, textTransform: 'uppercase', marginBottom: 12 },
+  actionCard: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14, overflow: 'hidden' },
+  goldAccent: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 3, backgroundColor: colors.primary, borderTopLeftRadius: radii.lg, borderBottomLeftRadius: radii.lg },
+  actionIconWrap: { width: 38, height: 38, borderRadius: radii.sm, backgroundColor: 'rgba(212,168,67,0.12)', alignItems: 'center', justifyContent: 'center', marginLeft: 10, marginRight: 14 },
+  actionTextWrap: { flex: 1 },
+  actionTitle: { fontSize: 16, fontWeight: '600', color: colors.text, marginBottom: 2 },
+  actionSubtitle: { fontSize: 13, color: colors.textSecondary },
+  alertCard: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, paddingHorizontal: 14, overflow: 'hidden' },
+  alertInfo: { flex: 1, marginLeft: 14 },
+  alertName: { fontSize: 15, fontWeight: '600', color: colors.text, marginBottom: 2 },
+  alertMeta: { fontSize: 13, color: colors.textSecondary },
+  modalTitle: { fontSize: 22, fontWeight: '700', color: colors.text, marginBottom: 20, letterSpacing: 0.3 },
+  loadingText: { fontSize: 15, color: colors.textSecondary, marginBottom: 20, textAlign: 'center' },
+  analysisRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10, gap: 8 },
+  analysisItem: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
+});

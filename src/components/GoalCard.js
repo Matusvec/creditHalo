@@ -1,32 +1,34 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Card, Button } from 'react-native-elements';
-import { globalStyles, colors } from '../theme/styles';
+import { Text, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { GlassCard, AnimatedButton } from './ui';
+import { useEntranceAnimation } from '../hooks/useEntranceAnimation';
+import colors from '../theme/colors';
 
-const GoalCard = ({ goal, onComplete }) => {
+const GoalCard = ({ goal, onComplete, delay = 0 }) => {
   if (!goal || goal.text == null) return null;
+  const entranceStyle = useEntranceAnimation(delay);
+
   return (
-    <Card
-      containerStyle={{
-        backgroundColor: colors.card,
-        borderRadius: 12,
-        borderColor: colors.cardBorder,
-        marginBottom: 12,
-      }}
-    >
-      <Text style={[globalStyles.title, { fontSize: 18 }]}>{goal.text}</Text>
-      <Button
-        title="I completed this goal"
-        buttonStyle={{
-          backgroundColor: colors.primary,
-          borderRadius: 8,
-          marginTop: 12,
-        }}
-        titleStyle={{ color: colors.text, fontWeight: '600' }}
-        onPress={() => onComplete(goal.id)}
-      />
-    </Card>
+    <Animated.View style={entranceStyle}>
+      <GlassCard>
+        <Text style={styles.goalText}>{goal.text}</Text>
+        <AnimatedButton
+          title="I completed this goal"
+          onPress={() => onComplete(goal.id)}
+          style={{ marginTop: 12 }}
+        />
+      </GlassCard>
+    </Animated.View>
   );
 };
+
+const styles = StyleSheet.create({
+  goalText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+  },
+});
 
 export default GoalCard;

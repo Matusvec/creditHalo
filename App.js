@@ -43,7 +43,7 @@ function AppContent() {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <AppNavigator initialRoute={isLoggedIn ? 'Main' : 'Loading'} />
     </>
   );
@@ -56,7 +56,7 @@ export default function App() {
 const styles = StyleSheet.create({
   splash: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#1A1714',
     justifyContent: 'center',
     alignItems: 'center',
   },

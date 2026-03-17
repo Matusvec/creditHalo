@@ -5,11 +5,11 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#FDD835"
+      "backgroundColor": "#1A1714"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -22,7 +22,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
-        "backgroundColor": "#FDD835"
+        "backgroundColor": "#1A1714"
       },
       "package": "com.credithalo.app"
     },
