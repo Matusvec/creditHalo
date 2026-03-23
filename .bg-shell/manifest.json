@@ -1,0 +1,16 @@
+[
+  {
+    "id": "f31b9e86",
+    "label": "landing-server",
+    "command": "cd /home/matus/projects/creditHalo/landing && node server.js",
+    "cwd": "/home/matus/projects/creditHalo",
+    "ownerSessionFile": "/home/matus/.gsd/sessions/--home-matus-projects-creditHalo--/2026-03-22T18-05-22-687Z_06946176-40ab-40f5-8704-c81e25518cde.jsonl",
+    "persistAcrossSessions": false,
+    "startedAt": 1774278755936,
+    "processType": "server",
+    "group": null,
+    "readyPattern": null,
+    "readyPort": 3001,
+    "pid": 4102883
+  }
+]

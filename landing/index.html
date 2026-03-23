@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Halo — Money talks. Finally.</title>
+<meta name="description" content="Build real wealth alongside the sharpest students at your school. Track your money, learn what works, and share strategies with a community growing together.">
+<meta name="theme-color" content="#141210">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--b0:#0D0C0A;--b1:#141210;--b2:#1B1916;--b3:#23201C;
+--g:#C9AA4D;--gh:#D4B65E;--gd:rgba(201,170,77,.15);--gg:rgba(201,170,77,.25);--gb:rgba(201,170,77,.22);
+--t:#13AB96;--td:rgba(19,171,150,.12);
+--tx:#F5F2EB;--ts:rgba(245,242,235,.75);--tm:rgba(245,242,235,.42);
+--bd:rgba(201,170,77,.16);--bd2:rgba(201,170,77,.12);
+--lt:#F7FFFF;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--b1);color:var(--tx);overflow-x:hidden;-webkit-font-smoothing:antialiased;line-height:1.6;position:relative}
+h1,h2,h3,.calc-amt,.sb-n,.how-num{font-family:'DM Sans',system-ui,sans-serif;letter-spacing:-.03em}
+.pf{font-family:'Playfair Display',Georgia,serif}
+
+/* ── noise ── */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:256px}
+
+/* ── morphing gradient blobs ── */
+@keyframes blobDrift1{0%,100%{transform:translate(0,0) scale(1)}25%{transform:translate(8vw,-6vh) scale(1.1)}50%{transform:translate(-4vw,8vh) scale(.95)}75%{transform:translate(6vw,3vh) scale(1.05)}}
+@keyframes blobDrift2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-10vw,5vh) scale(1.08)}66%{transform:translate(6vw,-8vh) scale(.92)}}
+@keyframes blobDrift3{0%,100%{transform:translate(0,0) scale(1)}20%{transform:translate(5vw,10vh) scale(1.12)}50%{transform:translate(-8vw,-4vh) scale(.97)}80%{transform:translate(3vw,-7vh) scale(1.06)}}
+@keyframes blobDrift4{0%,100%{transform:translate(0,0) scale(1)}40%{transform:translate(-6vw,-8vh) scale(1.05)}70%{transform:translate(9vw,6vh) scale(.93)}}
+@keyframes blobPulse1{0%,100%{opacity:1}50%{opacity:.75}}
+@keyframes blobPulse2{0%,100%{opacity:1}50%{opacity:.8}}
+
+.blob-bg{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(100px);will-change:transform,opacity}
+.blob-1{width:50vw;height:50vw;max-width:700px;max-height:700px;top:-10%;left:-10%;background:rgba(201,170,77,.14);animation:blobDrift1 30s ease-in-out infinite,blobPulse1 25s ease-in-out infinite}
+.blob-2{width:40vw;height:40vw;max-width:600px;max-height:600px;top:20%;right:-8%;background:rgba(19,171,150,.1);animation:blobDrift2 38s ease-in-out infinite,blobPulse2 30s ease-in-out infinite 5s}
+.blob-3{width:55vw;height:55vw;max-width:800px;max-height:800px;bottom:-15%;left:20%;background:rgba(201,170,77,.12);animation:blobDrift3 42s ease-in-out infinite,blobPulse1 35s ease-in-out infinite 10s}
+.blob-4{width:35vw;height:35vw;max-width:500px;max-height:500px;top:50%;left:-5%;background:rgba(19,171,150,.09);animation:blobDrift4 35s ease-in-out infinite,blobPulse2 28s ease-in-out infinite 8s}
+.blob-5{width:45vw;height:45vw;max-width:650px;max-height:650px;top:10%;left:40%;background:rgba(201,170,77,.1);animation:blobDrift1 48s ease-in-out infinite reverse,blobPulse2 32s ease-in-out infinite 12s}
+.blob-6{width:30vw;height:30vw;max-width:450px;max-height:450px;bottom:10%;right:-5%;background:rgba(19,171,150,.08);animation:blobDrift2 32s ease-in-out infinite reverse,blobPulse1 26s ease-in-out infinite 15s}
+
+/* ── dot grid ── */
+.dg{position:relative}.dg::after{content:'';position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(201,170,77,.06) 1px,transparent 1px);background-size:40px 40px;-webkit-mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,#000 10%,transparent 70%);mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,#000 10%,transparent 70%)}
+
+/* ── gradient mesh (hero) ── */
+.mesh::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 600px 600px at 12% 30%,rgba(201,170,77,.1),transparent 65%),radial-gradient(ellipse 500px 500px at 85% 60%,rgba(19,171,150,.07),transparent 65%),radial-gradient(ellipse 900px 500px at 50% 80%,rgba(201,170,77,.06),transparent 55%)}
+
+/* ── rings ── */
+@keyframes cw80{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes ccw60{to{transform:translate(-50%,-50%) rotate(-360deg)}}
+@keyframes cw120{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.rings{position:absolute;pointer-events:none;z-index:0}
+.rings svg{position:absolute;top:50%;left:50%;filter:drop-shadow(0 0 16px rgba(201,170,77,.15))}
+.rings .ro{width:500px;height:500px;margin:-250px 0 0 -250px;animation:cw80 80s linear infinite;opacity:.08}
+.rings .rm{width:350px;height:350px;margin:-175px 0 0 -175px;animation:ccw60 60s linear infinite;opacity:.06}
+.rings .rm svg{filter:drop-shadow(0 0 12px rgba(19,171,150,.12))}
+.rings .ri{width:200px;height:200px;margin:-100px 0 0 -100px;animation:cw120 40s linear infinite;opacity:.1}
+.rl{left:-250px;top:50%;transform:translateY(-50%)}
+.rr{right:-250px;top:50%;transform:translateY(-50%)}
+
+/* ── cursor glow ── */
+.cg{position:fixed;width:350px;height:350px;border-radius:50%;background:radial-gradient(circle,rgba(201,170,77,.04),transparent 70%);pointer-events:none;transform:translate(-50%,-50%);z-index:9998;transition:left .08s,top .08s;display:none}
+
+/* ── layout ── */
+.ctn{max-width:1140px;margin:0 auto;padding:0 32px}
+.cw{max-width:1320px;margin:0 auto;padding:0 32px}
+.ov{position:relative;overflow:hidden}
+
+/* ── reveal ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}.d5{transition-delay:.5s}
+
+/* ── nav ── */
+.nw{position:sticky;top:0;z-index:100;background:rgba(20,18,16,.3);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid transparent;transition:all .4s}
+.nw.scrolled{background:rgba(20,18,16,.9);border-bottom-color:var(--bd2)}
+nav{display:flex;align-items:center;justify-content:space-between;padding:13px 0}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo svg{width:26px;height:26px;flex-shrink:0}
+.logo span{font-size:1.05rem;font-weight:700;color:var(--t)}
+.nr{display:flex;align-items:center;gap:24px}
+.nl{font-size:.84rem;color:var(--ts);text-decoration:none;font-weight:500;transition:color .25s}
+.nl:hover{color:var(--tx)}
+.btn{display:inline-flex;align-items:center;padding:10px 22px;background:var(--g);border:none;border-radius:10px;color:var(--b1);font-size:.84rem;font-weight:600;font-family:inherit;cursor:pointer;text-decoration:none;transition:all .25s;box-shadow:0 2px 10px rgba(201,170,77,.2)}
+.btn:hover{background:var(--gh);transform:translateY(-1px);box-shadow:0 4px 20px var(--gg)}
+.btn:active{transform:scale(.98)}.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+@keyframes bp{0%,100%{box-shadow:0 2px 10px rgba(201,170,77,.2)}50%{box-shadow:0 4px 20px var(--gg)}}
+
+/* ── hero ── */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:var(--b1)}
+.hg{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center;position:relative;z-index:3;padding:72px 0 80px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 18px;background:var(--gd);border:1px solid var(--bd2);border-radius:100px;font-size:.74rem;font-weight:600;color:var(--g);letter-spacing:.06em;text-transform:uppercase;margin-bottom:28px}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--g);animation:bp 2s ease-in-out infinite}
+.hero h1{font-size:clamp(4.2rem,9vw,7rem);font-weight:700;line-height:.92;color:var(--tx);margin-bottom:36px}
+.hero .pf{display:block;color:var(--t);font-size:clamp(5rem,10vw,8.5rem);line-height:.88;margin-top:8px}
+.hsub{font-size:1.18rem;color:var(--ts);max-width:500px;line-height:1.7;margin-bottom:40px}
+
+/* ── form ── */
+.wl{max-width:440px}
+.wf{display:flex;gap:8px;padding:5px;background:var(--b3);border:1px solid var(--gb);border-radius:12px;transition:border-color .25s,box-shadow .25s}
+.wf:focus-within{border-color:rgba(19,171,150,.45);box-shadow:0 0 0 3px rgba(19,171,150,.1)}
+.wf input{flex:1;padding:14px 16px;border:none;background:transparent;font-size:.93rem;font-family:inherit;color:var(--tx);outline:none;min-width:0}
+.wf input::placeholder{color:var(--tm)}
+.wf .btn{border-radius:9px;padding:16px 36px;white-space:nowrap;font-size:.92rem;font-weight:700}
+.fm{margin-top:8px;font-size:.82rem;min-height:20px;font-weight:500}
+.fm.ok{color:var(--t)}.fm.err{color:#D94545}
+.fn{margin-top:10px;font-size:.76rem;color:var(--tm)}
+.chips{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--td);border:1px solid rgba(19,171,150,.12);border-radius:100px;font-size:.74rem;color:var(--t);font-weight:500}
+.chip svg{width:14px;height:14px;stroke:var(--t);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wlc{margin-top:12px;font-size:.78rem;color:var(--g);font-weight:600}
+
+/* ── calc ── */
+.calc{background:var(--b2);border:1px solid var(--bd);border-radius:20px;padding:28px 24px;position:relative;margin-top:12px}
+.calc::before{content:'';position:absolute;top:0;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,var(--g),transparent);opacity:.6}
+.calc-title{font-size:.9rem;font-weight:700;color:var(--tx);margin-bottom:18px}
+.calc label{font-size:.74rem;color:var(--tm);font-weight:500;display:block;margin-bottom:8px}
+.calc-slider{width:100%;-webkit-appearance:none;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--g) var(--pct,20%),var(--b3) var(--pct,20%));outline:none;cursor:pointer;margin-bottom:18px}
+.calc-slider::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--g);box-shadow:0 0 0 4px rgba(201,170,77,.15),0 2px 8px rgba(0,0,0,.3);cursor:pointer;border:3px solid var(--b2)}
+.calc-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--g);box-shadow:0 0 0 4px rgba(201,170,77,.15),0 2px 8px rgba(0,0,0,.3);cursor:pointer;border:3px solid var(--b2)}
+.calc-amt{font-size:1.6rem;font-weight:700;color:var(--g);text-align:center;margin-bottom:16px}
+.calc-amt small{font-size:.6em;opacity:.6}
+.calc-rows{display:flex;flex-direction:column;gap:6px}
+.cr{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:8px;background:rgba(201,170,77,.03);border:1px solid rgba(201,170,77,.06)}
+.cr span:first-child{font-size:.78rem;color:var(--ts)}
+.cv{font-size:.95rem;font-weight:700;color:var(--tx)}
+.cr-hl{background:rgba(201,170,77,.08);border-color:rgba(201,170,77,.18);margin-top:6px;position:relative}
+.cr-hl::before{content:'';position:absolute;top:-6px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(201,170,77,.2),transparent)}
+.cr-hl .cv{color:var(--g)}
+.calc-note{font-size:.74rem;color:var(--ts);margin-top:14px;text-align:center;font-style:italic;opacity:.7}
+
+/* ── scroll indicator ── */
+@keyframes scrollBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+.scroll-hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);z-index:4;opacity:.3;animation:scrollBounce 2s ease-in-out infinite}
+.scroll-hint svg{width:20px;height:20px;stroke:var(--g);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── ticker ── */
+@keyframes tick{to{transform:translateX(-50%)}}
+.tk{overflow:hidden;padding:14px 0;background:var(--b0);border-top:1px solid var(--bd2);border-bottom:1px solid var(--bd2)}
+.tk-t{display:flex;width:max-content;animation:tick 35s linear infinite}
+.tk-i{font-size:.68rem;font-weight:700;color:var(--g);opacity:.3;white-space:nowrap;padding:0 14px;letter-spacing:.15em;text-transform:uppercase}
+.tk-d{color:var(--g);opacity:.15;padding:0 2px;font-size:.3rem;align-self:center}
+
+/* ── section bg alternation ── */
+.bg1{background:var(--b1)}.bg2{background:var(--b2)}.bg0{background:var(--b0)}
+
+/* ── section heading ── */
+.sh{font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:700;line-height:1.08}
+
+/* ── problem ── */
+.prob{padding:100px 0}
+.prob-g{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;position:relative;z-index:3}
+.sb{margin-bottom:28px;padding-bottom:28px;border-bottom:1.5px solid rgba(201,170,77,.12)}
+.sb:last-of-type{border:none;margin-bottom:0;padding-bottom:0}
+.sb-n{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:700;color:var(--g);line-height:1;margin-bottom:6px}
+.sb-l{font-size:.84rem;color:var(--ts)}
+.prob h2{color:var(--tx);margin-bottom:28px;line-height:1.1}
+.pp{position:relative;padding-left:20px;margin-bottom:24px}
+.pp::before{content:'';position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px rgba(201,170,77,.4)}
+.pp strong{color:var(--tx);font-weight:700;display:block;margin-bottom:4px;font-size:.92rem}
+.pp span{color:var(--ts);font-size:.88rem;line-height:1.65}
+
+/* ── before/after ── */
+.ba-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.ba-tag{font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:6px 14px;border-radius:8px;display:inline-block;margin-bottom:20px}
+.ba-tag-before{background:rgba(217,69,69,.08);color:#D94545;border:1px solid rgba(217,69,69,.15)}
+.ba-tag-after{background:var(--gd);color:var(--g);border:1px solid var(--bd2)}
+.ba-row{display:flex;align-items:flex-start;gap:12px;font-size:.9rem;line-height:1.6;padding:12px 16px;border-radius:10px;margin-bottom:8px}
+.ba-before{color:var(--ts);background:rgba(217,69,69,.03);border:1px solid rgba(217,69,69,.06)}
+.ba-after{color:var(--tx);background:rgba(201,170,77,.04);border:1px solid rgba(201,170,77,.08)}
+.ba-x{color:#D94545;font-weight:700;font-size:1rem;flex-shrink:0;width:20px;text-align:center;opacity:.6}
+.ba-check{color:var(--g);font-weight:700;font-size:1rem;flex-shrink:0;width:20px;text-align:center}
+
+/* ── how ── */
+.how{padding:100px 0}
+.how-h{text-align:center;margin-bottom:56px}
+.how-g{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;position:relative}
+.how-g::before{content:'';position:absolute;top:28px;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,var(--g),var(--g),transparent);opacity:.18;box-shadow:0 0 10px rgba(201,170,77,.2)}
+.how-s{text-align:center;position:relative;z-index:3}
+.how-num{font-size:2.8rem;font-weight:700;color:var(--g);margin-bottom:14px;opacity:.3}
+.how-s h3{font-size:1rem;font-weight:700;color:var(--tx);margin-bottom:8px}
+.how-s p{font-size:.86rem;color:var(--ts);line-height:1.65}
+
+/* ── features ── */
+.feat{padding:100px 0}
+.feat-h{text-align:center;margin-bottom:56px}
+.feat-h p{font-size:1rem;color:var(--ts);max-width:500px;margin:14px auto 0;line-height:1.7}
+.fg{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.fc{padding:32px 28px;background:var(--b1);border:1px solid var(--bd);border-radius:18px;transition:all .25s}
+.fc:hover{border-color:rgba(201,170,77,.28);transform:translateY(-4px);box-shadow:0 8px 32px rgba(0,0,0,.25),0 0 0 1px rgba(201,170,77,.08)}
+.fc-i{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;background:var(--gd);transition:transform .25s}
+.fc:hover .fc-i{transform:scale(1.08)}
+.fc-i svg{width:22px;height:22px;stroke:var(--g);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.fc h3{font-size:1.05rem;font-weight:600;color:var(--t);margin-bottom:8px}
+.fc p{font-size:.86rem;color:var(--ts);line-height:1.65}
+
+/* ── use cases ── */
+.uc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.uc{padding:32px 28px;background:var(--b1);border:1px solid var(--bd2);border-radius:18px;transition:all .25s;position:relative}
+.uc:hover{border-color:rgba(201,170,77,.25);transform:translateY(-4px);box-shadow:0 8px 28px rgba(0,0,0,.2)}
+.uc-icon{font-size:1.8rem;margin-bottom:16px}
+.uc h3{font-size:1.05rem;font-weight:700;color:var(--tx);margin-bottom:10px;letter-spacing:-.02em}
+.uc p{font-size:.86rem;color:var(--ts);line-height:1.65;margin-bottom:16px}
+.uc-tag{display:inline-block;padding:4px 12px;background:var(--gd);border:1px solid var(--bd2);border-radius:100px;font-size:.68rem;font-weight:600;color:var(--g);letter-spacing:.03em}
+
+/* ── manifesto ── */
+.mani{padding:80px 0;text-align:center}
+.mani-inner{max-width:680px;margin:0 auto;padding:36px 0;border-top:1px solid rgba(201,170,77,.15);border-bottom:1px solid rgba(201,170,77,.15)}
+.mani h2{color:var(--tx);font-size:clamp(1.3rem,2.5vw,1.65rem);font-weight:700;margin-bottom:18px;line-height:1.25}
+.mani p{color:var(--ts);font-size:.92rem;line-height:1.8;max-width:620px;margin:0 auto}
+
+/* ── phone ── */
+.phone-sec{padding:80px 0;text-align:center}
+.phone-label{font-size:.76rem;color:var(--tm);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:24px}
+.phone{width:260px;margin:0 auto;background:linear-gradient(135deg,#2A2720,var(--b3));border-radius:40px;padding:10px;box-shadow:0 24px 64px rgba(0,0,0,.4),0 0 0 1px rgba(201,170,77,.08),inset 0 1px 0 rgba(255,255,255,.04);position:relative}
+.phone-inner{background:var(--b1);border-radius:32px;overflow:hidden;height:460px;position:relative}
+.ps{position:absolute;inset:0;display:flex;flex-direction:column;padding:28px 20px;opacity:0;transition:opacity .8s}
+.ps.active{opacity:1}
+.ps-bar{display:flex;justify-content:space-between;font-size:.55rem;color:var(--tm);margin-bottom:16px;font-weight:500}
+.ps-title{font-size:.72rem;color:var(--tm);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:16px}
+.ps-goal{background:rgba(201,170,77,.06);border:1px solid rgba(201,170,77,.1);border-radius:14px;padding:16px;margin-bottom:16px}
+.ps-goal-name{font-size:.82rem;color:var(--tx);font-weight:600;margin-bottom:10px}
+.ps-goal-bar{height:7px;background:var(--b3);border-radius:4px;overflow:hidden;margin-bottom:8px}
+.ps-goal-fill{height:100%;background:var(--g);border-radius:4px;width:0%;transition:width 1.5s cubic-bezier(.16,1,.3,1)}
+.ps-goal-meta{display:flex;justify-content:space-between;font-size:.62rem;color:var(--tm)}
+.ps-tip{background:var(--td);border:1px solid rgba(19,171,150,.1);border-radius:10px;padding:12px;font-size:.68rem;color:var(--ts);line-height:1.4}
+.ps-tip strong{color:var(--t)}
+.ps-msg{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start}
+.ps-av{width:24px;height:24px;border-radius:50%;flex-shrink:0}
+.ps-bubble{background:var(--b3);border-radius:0 12px 12px 12px;padding:10px 12px;font-size:.68rem;color:var(--ts);line-height:1.4}
+.ps-meta2{font-size:.55rem;color:var(--tm);margin-top:2px;margin-bottom:8px;padding-left:32px}
+.ps-msg.self .ps-bubble{background:var(--gd);border-radius:12px 0 12px 12px}
+.ps-msg.self{flex-direction:row-reverse}
+.ps-msg.self+.ps-meta2{text-align:right;padding-left:0;padding-right:32px}
+.ps-gauge{width:140px;height:140px;margin:8px auto}
+.ps-gauge svg{width:100%;height:100%}
+.ps-gauge-t{stroke:rgba(201,170,77,.08);fill:none;stroke-width:10;stroke-linecap:round}
+.ps-gauge-f{fill:none;stroke:var(--g);stroke-width:10;stroke-linecap:round;stroke-dasharray:330;stroke-dashoffset:330;transition:stroke-dashoffset 2s cubic-bezier(.16,1,.3,1)}
+.ps-gauge-f.on{stroke-dashoffset:82.5}
+.ps-gn{text-align:center;font-size:1.6rem;font-weight:700;color:var(--g);margin-top:-4px}
+.ps-extra{text-align:center;margin-top:6px;font-size:.6rem;color:var(--tm)}
+.ps-extra span{display:inline-block;padding:3px 8px;background:var(--td);border-radius:6px;margin:0 3px;color:var(--t);font-weight:600}
+.ps-delta{text-align:center;font-size:.65rem;color:var(--t);font-weight:600;margin-top:6px}
+.ps-gl{text-align:center;font-size:.58rem;color:var(--tm);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+
+/* ── partners ── */
+.part{padding:72px 0}
+.part-h{text-align:center;margin-bottom:10px}
+.part-h p{font-size:.88rem;color:var(--ts);max-width:460px;margin:10px auto 32px;line-height:1.6}
+.part-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
+.pc{width:140px;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed rgba(201,170,77,.12);border-radius:14px;background:rgba(201,170,77,.02);transition:all .25s;cursor:default}
+.pc:hover{border-color:var(--g);border-style:solid;box-shadow:0 4px 16px rgba(201,170,77,.08)}
+.pc svg{width:24px;height:24px;stroke:var(--g);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.5}
+.pc span{font-size:.68rem;color:var(--tm);font-weight:600;text-align:center;line-height:1.2}
+.part-cta{text-align:center;font-size:.82rem;color:var(--t);font-weight:600}
+.part-cta a{color:var(--t);text-decoration:none;transition:all .25s}
+.part-cta a:hover{text-decoration:underline;opacity:.8}
+
+/* ── about ── */
+.about{padding:100px 0;position:relative;overflow:hidden}
+.about-inner{max-width:620px;position:relative;z-index:3}
+.about h2{margin-bottom:18px;line-height:1.1}
+.about p{font-size:.95rem;color:var(--ts);line-height:1.75;margin-bottom:24px}
+.pills{display:flex;gap:10px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;background:var(--gd);border:1px solid var(--bd);border-radius:100px;font-size:.8rem;color:var(--ts);font-weight:600;transition:border-color .25s}
+.pill:hover{border-color:rgba(201,170,77,.3)}
+.pill .dd{width:5px;height:5px;border-radius:50%;background:var(--g);box-shadow:0 0 6px rgba(201,170,77,.4)}
+
+/* ── quotes ── */
+.quotes{padding:72px 0}
+.qg{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.qc{padding:32px 28px;background:var(--b2);border:1px solid var(--bd2);border-radius:18px}
+.qc-m{font-family:'Playfair Display',Georgia,serif;font-size:4rem;color:var(--g);opacity:.25;line-height:.7;margin-bottom:8px}
+.qc blockquote{font-size:.88rem;color:var(--ts);line-height:1.7;font-style:italic;margin-bottom:16px}
+.qc cite{font-size:.82rem;color:var(--t);font-weight:600;font-style:normal;display:flex;align-items:center;gap:8px}
+.qc cite::before{content:'';width:16px;height:1px;background:var(--g);opacity:.4}
+
+/* ── faq ── */
+.faq{padding:72px 0}
+.faq-h{text-align:center;margin-bottom:40px}
+.faq-item{border-bottom:1px solid rgba(201,170,77,.08);max-width:680px;margin:0 auto}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:20px 0;cursor:pointer;gap:16px}
+.faq-q h3{font-size:.9rem;font-weight:600;color:var(--t)}
+.faq-chev{width:18px;height:18px;stroke:var(--g);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s;flex-shrink:0}
+.faq-item.open .faq-chev{transform:rotate(180deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s}
+.faq-item.open .faq-a{max-height:200px}
+.faq-a p{font-size:.86rem;color:var(--ts);line-height:1.65;padding-bottom:20px}
+
+/* ── cta ── */
+.cta{padding:100px 0 72px;position:relative}
+.cta-inner{text-align:center;max-width:560px;margin:0 auto;position:relative;z-index:3}
+.cta h2{color:var(--tx);margin-bottom:14px;line-height:1.1}
+.cta p{font-size:.98rem;color:var(--ts);margin-bottom:36px;line-height:1.7}
+.cta .wl{margin:0 auto}
+.cta-glow{position:absolute;top:40%;left:50%;width:500px;height:400px;transform:translate(-50%,-50%);background:radial-gradient(ellipse,rgba(201,170,77,.06),transparent 60%);pointer-events:none}
+
+/* ── footer ── */
+.foot{padding:48px 0;background:var(--b0);border-top:1px solid rgba(201,170,77,.1)}
+.foot-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px}
+.foot-b{display:flex;align-items:center;gap:8px}
+.foot-b svg{width:18px;height:18px}
+.foot-b span{font-size:.85rem;font-weight:700;color:var(--tx)}
+.foot-r{display:flex;align-items:center;gap:20px}
+.foot-a{font-size:.78rem;color:var(--tm);text-decoration:none;font-weight:500;transition:color .25s}
+.foot-a:hover{color:var(--t)}
+.foot-c{font-size:.75rem;color:rgba(245,242,235,.22)}
+
+/* ── responsive ── */
+@media(max-width:900px){.hg{grid-template-columns:1fr;text-align:center}.hsub,.wl{max-width:100%}.chips{justify-content:center}.calc{margin-top:24px}.prob-g{grid-template-columns:1fr;gap:40px}.ba-grid{grid-template-columns:1fr}.fg{grid-template-columns:1fr}.uc-grid{grid-template-columns:1fr}.how-g{grid-template-columns:1fr;gap:24px}.how-g::before{display:none}.qg{grid-template-columns:1fr}.about-inner{max-width:100%}.pc{width:110px;height:76px}}
+@media(max-width:768px){.hero{min-height:auto;padding:48px 0 40px}.hero h1{font-size:clamp(2.4rem,8vw,3.4rem)}.hero .pf{font-size:clamp(2.8rem,9vw,4rem)}.wf{flex-direction:column;border-radius:14px}.wf .btn{width:100%;border-radius:10px;padding:14px}.nr .nl{display:none}.rings{display:none}.ctn,.cw{padding:0 20px}.foot-inner{flex-direction:column;text-align:center;gap:14px}.foot-r{flex-direction:column;gap:8px}.prob,.feat,.about{padding:64px 0}.cta{padding:72px 0 48px}.how,.phone-sec,.part,.quotes,.faq,.mani{padding:56px 0}.ba-sec{padding:56px 0!important}.cg{display:none!important}.scroll-hint{display:none}.blob-bg{display:none}}
+@media(max-width:480px){.fc{padding:24px 20px}.calc{padding:22px 18px}}
+</style>
+</head>
+<body>
+<div class="cg" id="cg"></div>
+<div class="blob-bg">
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="blob blob-4"></div>
+<div class="blob blob-5"></div>
+<div class="blob blob-6"></div>
+</div>
+
+<!-- ═══ NAV ═══ -->
+<div class="nw" id="nw"><div class="cw"><nav>
+<a href="#" class="logo"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="9" stroke-linecap="round"/></svg><span>Credit Halo</span></a>
+<div class="nr"><a href="#features" class="nl">Features</a><a href="#about" class="nl">About</a><a href="#waitlist" class="btn" id="navBtn">Join the Waitlist</a></div>
+</nav></div></div>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero mesh dg ov" id="waitlist">
+<div class="rings rl"><div class="ro"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="rm"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#13AB96" stroke-width="2" stroke-linecap="round"/></svg></div><div class="ri"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="3" stroke-linecap="round"/></svg></div></div>
+<div class="ctn" style="position:relative;z-index:3"><div class="hg">
+<div>
+<div class="badge rv"><span class="badge-dot"></span>Launching Fall 2026</div>
+<h1 class="rv d1">Money talks.<span class="pf">Finally.</span></h1>
+<p class="hero-mantra rv d2" style="font-size:1.15rem;font-weight:600;color:var(--g);margin-bottom:16px;letter-spacing:-.02em;max-width:480px">Let's build generational wealth — together. Starting now, starting here, five minutes at a time.</p>
+<p class="hsub rv d2">Set your first real financial goal — your first car, your first investment, or your first $10K. Credit Halo gives you the AI roadmap, the daily tools, and a community building wealth alongside you.</p>
+<div class="wl rv d3">
+<form class="wf" id="wf1"><input type="email" id="ei1" placeholder="you@college.edu" required autocomplete="email"><button class="btn" type="submit">Join the Waitlist</button></form>
+<div class="fm" id="fm1"></div>
+<div class="fn">100% free. No spam, ever.</div>
+<div class="chips">
+<span class="chip"><svg viewBox="0 0 24 24"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>Track</span>
+<span class="chip"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Learn</span>
+<span class="chip"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Build</span>
+</div>
+<div class="wlc" id="wlc"></div>
+</div>
+</div>
+<div class="rv d3">
+<div class="calc"><div class="calc-title">Your Wealth in 10 Years</div>
+<label>How much could you save per month?</label>
+<input type="range" class="calc-slider" id="cs" min="5" max="500" value="100" step="5">
+<div class="calc-amt" id="ca">$100<small>/mo</small></div>
+<div class="calc-rows">
+<div class="cr"><span>In 1 year</span><span class="cv" id="c1">$1,241</span></div>
+<div class="cr"><span>In 5 years</span><span class="cv" id="c5">$7,808</span></div>
+<div class="cr"><span>In 10 years</span><span class="cv" id="c10">$19,655</span></div>
+<div class="cr cr-hl"><span>With Credit Halo insights</span><span class="cv" id="ch">$26,180</span></div>
+</div>
+<div class="calc-note">The difference? Knowing what your peers already figured out.</div>
+</div>
+</div>
+</div></div>
+<div class="scroll-hint"><svg viewBox="0 0 24 24"><polyline points="7 13 12 18 17 13"/><polyline points="7 6 12 11 17 6"/></svg></div>
+</section>
+
+<!-- ═══ TICKER ═══ -->
+<div class="tk"><div class="tk-t" id="tt"></div></div>
+
+<!-- ═══ PROBLEM ═══ -->
+<section class="prob bg2 ov dg">
+<div class="rings rr"><div class="ro"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="rm"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#13AB96" stroke-width="2" stroke-linecap="round"/></svg></div><div class="ri"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="3" stroke-linecap="round"/></svg></div></div>
+<div class="cw" style="position:relative;z-index:3"><div class="prob-g">
+<div>
+<div class="sb rv"><div class="sb-n" data-to="37338" data-pre="$" data-sep>$0</div><div class="sb-l">Average student loan debt at graduation</div></div>
+<div class="sb rv d1"><div class="sb-n" data-to="76" data-suf="%">0%</div><div class="sb-l">Of young adults lack basic financial literacy</div></div>
+<div class="sb rv d2"><div class="sb-n">$1.2M</div><div class="sb-l">What starting at 20 vs 30 costs you in retirement</div></div>
+</div>
+<div>
+<h2 class="sh rv d1">$37,338 in debt.<br>Zero financial education.<br><span style="opacity:.5;font-size:.85em">Sound familiar?</span></h2>
+<div class="rv d2">
+<div class="pp"><strong>The system is broken.</strong><span>The average graduate leaves with $37,338 in debt and zero financial education. Credit cards, loans, taxes, investments — no training for any of it.</span></div>
+<div class="pp"><strong>The tools aren't built for us.</strong><span>Banking apps show numbers. Investment apps assume you already know. Nothing combines learning with money management for someone starting from zero.</span></div>
+<div class="pp"><strong>And you're doing it alone.</strong><span>Every hard thing in college you do with friends. But money? You figure it out in silence. Wealth is built faster together.</span></div>
+</div></div>
+</div></div>
+</section>
+
+<!-- ═══ BEFORE/AFTER ═══ -->
+<!-- ═══ BEFORE → AFTER ═══ -->
+<section class="ba-sec bg1 ov" style="padding:80px 0">
+<div class="cw" style="position:relative;z-index:3">
+<div class="ba-head rv" style="text-align:center;margin-bottom:48px"><h2 class="sh">What changes when you join</h2></div>
+<div class="ba-grid">
+<div class="ba-col rv">
+<div class="ba-tag ba-tag-before">WITHOUT CREDIT HALO</div>
+<div class="ba-row ba-before"><span class="ba-x">✗</span>Checking your bank account with one eye closed</div>
+<div class="ba-row ba-before"><span class="ba-x">✗</span>No idea what your friends actually spend or save</div>
+<div class="ba-row ba-before"><span class="ba-x">✗</span>Googling financial advice at 2am and getting ads</div>
+<div class="ba-row ba-before"><span class="ba-x">✗</span>Feeling behind but not knowing where to start</div>
+</div>
+<div class="ba-col rv d2">
+<div class="ba-tag ba-tag-after">WITH CREDIT HALO</div>
+<div class="ba-row ba-after"><span class="ba-check">✓</span>AI-powered roadmaps to hit your financial goals</div>
+<div class="ba-row ba-after"><span class="ba-check">✓</span>Real peer data showing what students your age do</div>
+<div class="ba-row ba-after"><span class="ba-check">✓</span>A community sharing what's working (and what's not)</div>
+<div class="ba-row ba-after"><span class="ba-check">✓</span>Your net worth climbing alongside others doing the same</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ═══ HOW ═══ -->
+<section class="how bg1 ov dg">
+<div class="ctn">
+<div class="how-h"><h2 class="sh rv">How it works</h2></div>
+<div class="how-g">
+<div class="how-s rv"><div class="how-num">01</div><h3>Set your goals</h3><p>Car, emergency fund, zero debt — tell us your goal. Our AI builds a daily action plan that adapts as your situation changes.</p></div>
+<div class="how-s rv d1"><div class="how-num">02</div><h3>Learn & track daily</h3><p>Five minutes a day. Bite-sized lessons on credit, budgeting, and investing. Track spending automatically. Watch your Halo Score climb.</p></div>
+<div class="how-s rv d2"><div class="how-num">03</div><h3>Grow with your community</h3><p>See what students your age are saving. Share wins, get peer accountability. Wealth-building as a team sport, not a solo grind.</p></div>
+</div>
+</div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="feat bg2 ov" id="features">
+<div class="rings rl"><div class="ro"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="rm"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#13AB96" stroke-width="2" stroke-linecap="round"/></svg></div><div class="ri"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="3" stroke-linecap="round"/></svg></div></div>
+<div class="cw" style="position:relative;z-index:3">
+<div class="feat-h"><h2 class="sh rv">Built different, on purpose</h2><p class="rv d1">Everything you need to understand your money — and a community that makes it stick.</p></div>
+<div class="fg">
+<div class="fc rv"><div class="fc-i"><svg viewBox="0 0 24 24"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div><h3>Smart Budgets</h3><p>Set budgets by category, get alerts before you overspend. See exactly where your money goes. Real management — not a spreadsheet.</p></div>
+<div class="fc rv d1"><div class="fc-i"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><h3>Halo Score™</h3><p>Your financial wellness number. One score reflecting credit, savings, spending, and knowledge. Your financial GPA — watch it climb.</p></div>
+<div class="fc rv d2"><div class="fc-i"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>Community</h3><p>Ask questions, share wins, talk money openly. No judgment. No flexing. Just real conversations that make everyone smarter.</p></div>
+<div class="fc rv d3"><div class="fc-i"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div><h3>Peer Benchmarks</h3><p>What are students your age saving? Average net worth of seniors? Real anonymized peer data — set goals based on reality.</p></div>
+</div>
+</div>
+</section>
+
+<!-- ═══ MANIFESTO ═══ -->
+<section class="mani bg1 ov">
+<div class="mani-inner rv">
+<h2>We know. Getting people to talk about money is hard.</h2>
+<p>That's exactly why Credit Halo exists — not to force the conversation, but to create a space where it happens naturally. When a peer shares how they paid off $5,000 in debt, or started investing with $50, or negotiated their first salary — talking about money stops feeling scary and starts feeling powerful. The community creates the permission. The wealth follows.</p>
+</div>
+</section>
+
+<!-- ═══ USE CASES ═══ -->
+<section class="usec bg2 ov" style="padding:100px 0">
+<div class="cw" style="position:relative;z-index:3">
+<div style="text-align:center;margin-bottom:56px">
+<h2 class="sh rv">Real goals. Real results.</h2>
+<p class="rv d1" style="font-size:1rem;color:var(--ts);max-width:500px;margin:14px auto 0;line-height:1.7">Every student's financial journey is different. Here's how Credit Halo meets you where you are.</p>
+</div>
+<div class="uc-grid">
+<div class="uc rv">
+<div class="uc-icon">💼</div>
+<h3>Negotiate a better salary</h3>
+<p>Your first job offer doesn't have to be your final number. Learn negotiation strategies from peers who've done it, see real salary data from students at your school, and walk into that conversation with confidence — not guesswork.</p>
+<div class="uc-tag">Community + Peer Data</div>
+</div>
+<div class="uc rv d1">
+<div class="uc-icon">💳</div>
+<h3>Pick the right credit card</h3>
+<p>Stop Googling "best student credit card" and getting affiliate spam. See which cards students at your university actually use, what rewards they're getting, and how they're building credit scores above 750 — while still in school.</p>
+<div class="uc-tag">Peer Benchmarks</div>
+</div>
+<div class="uc rv d2">
+<div class="uc-icon">🏠</div>
+<h3>Plan your first big purchase</h3>
+<p>Whether it's a car, an apartment deposit, or a trip abroad — set the goal and get a daily action plan. Credit Halo's AI breaks down exactly how much to save weekly, where to cut, and how to get there months faster than you thought.</p>
+<div class="uc-tag">AI Wealth Roadmap</div>
+</div>
+<div class="uc rv d3">
+<div class="uc-icon">🎓</div>
+<h3>Tackle student loan strategy</h3>
+<p>Should you pay minimums and invest the rest? Refinance? Consolidate? Get advice from peers who've been through it, not from a bank that wants your interest payments. Real strategies from students who figured it out.</p>
+<div class="uc-tag">Community + Lessons</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ═══ PHONE ═══ -->
+<section class="phone-sec bg1 ov">
+<div class="ctn"><div class="phone-label rv">A glimpse of what's coming</div>
+<div class="phone rv d1" id="pm"><div class="phone-inner">
+<div class="ps active" id="ps1">
+<div class="ps-bar"><span>9:41</span><span>Credit Halo</span><span>5G</span></div>
+<div class="ps-title">AI Wealth Roadmap</div>
+<div class="ps-goal"><div class="ps-goal-name">🚗 First Car: $8,000</div><div class="ps-goal-bar"><div class="ps-goal-fill" id="pgf" data-w="43%"></div></div><div class="ps-goal-meta"><span>$3,440 saved</span><span>43%</span></div></div>
+<div class="ps-tip"><strong>Today's tip:</strong> Skip Uber Eats → +$15 toward your goal</div>
+</div>
+<div class="ps" id="ps2">
+<div class="ps-bar"><span>9:41</span><span>Credit Halo</span><span>5G</span></div>
+<div class="ps-title">Community</div>
+<div class="ps-msg"><div class="ps-av" style="background:linear-gradient(135deg,#C9AA4D,#13AB96)"></div><div class="ps-bubble">Just hit $5K saved!! Started from $0 in September 🎉</div></div>
+<div class="ps-meta2">❤️ 47 · 💬 12</div>
+<div class="ps-msg"><div class="ps-av" style="background:linear-gradient(135deg,#13AB96,#C9AA4D)"></div><div class="ps-bubble">How I negotiated $45K → $58K salary offer ↗️</div></div>
+<div class="ps-meta2">❤️ 89 · 💬 34</div>
+</div>
+<div class="ps" id="ps3">
+<div class="ps-bar"><span>9:41</span><span>Credit Halo</span><span>5G</span></div>
+<div class="ps-title">Halo Score</div>
+<div class="ps-gauge"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="85" class="ps-gauge-t" transform="rotate(-225 100 100)" stroke-dasharray="401" stroke-dashoffset="134"/><circle cx="100" cy="100" r="85" class="ps-gauge-f" id="psg" transform="rotate(-225 100 100)"/></svg></div>
+<div class="ps-gn" id="pgn">0</div>
+<div class="ps-delta">+12 this week</div>
+<div class="ps-gl">Financial Wellness</div>
+<div class="ps-extra"><span>🔥 5-day streak</span><span>📚 Lesson 14</span></div>
+</div>
+</div></div>
+</div>
+</section>
+
+<!-- ═══ PARTNERS ═══ -->
+<section class="part bg1 ov">
+<div class="ctn"><div class="part-h"><h2 class="sh rv">A platform banks want to be part of</h2><p class="rv d1">Building partnerships with financial brands who want to authentically reach the next generation — with tools, not ads.</p></div>
+<div class="part-row rv d2">
+<div class="pc"><svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M3 7v14"/><path d="M21 7v14"/><path d="M6 7v4"/><path d="M10 7v4"/><path d="M14 7v4"/><path d="M18 7v4"/><path d="M3 7l9-4 9 4"/></svg><span>Banking</span></div>
+<div class="pc"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg><span>Credit Card</span></div>
+<div class="pc"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg><span>Investment</span></div>
+<div class="pc"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/></svg><span>Student Loan</span></div>
+<div class="pc"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Insurance</span></div>
+</div>
+<div class="part-cta rv d3">Interested in partnering? <a href="mailto:hello@credithalo.app">Contact us →</a></div>
+</div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section class="about bg2 ov" id="about">
+<div class="rings rr"><div class="ro"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="rm"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#13AB96" stroke-width="2" stroke-linecap="round"/></svg></div><div class="ri"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="3" stroke-linecap="round"/></svg></div></div>
+<div class="cw" style="position:relative;z-index:3"><div class="about-inner rv">
+<h2 class="sh">Built by students who get it</h2>
+<p>Credit Halo was co-founded by a Computer Science student and a Goldman Sachs Summer Analyst — both at the University of Notre Dame. We didn't build another budgeting app. We built the financial platform we wished existed: real money tools, real financial education, and a real community — in one place.</p>
+<div class="pills"><span class="pill"><span class="dd"></span>University of Notre Dame</span><span class="pill"><span class="dd"></span>Goldman Sachs</span></div>
+</div></div>
+</section>
+
+<!-- ═══ QUOTES ═══ -->
+<section class="quotes bg1 ov">
+<div class="ctn"><div class="qg">
+<div class="qc rv"><div class="qc-m">"</div><blockquote>I watched students make the same financial mistakes — not because they're dumb, but because nobody's talking about money. The moment one person shares what they learned, everyone levels up.</blockquote><cite>Matus, Co-Founder & CTO</cite></div>
+<div class="qc rv d1"><div class="qc-m">"</div><blockquote>At Goldman Sachs I saw the gap firsthand. It's not intelligence — it's access to the right information at the right time, and a community that normalizes the conversation.</blockquote><cite>Christian, Co-Founder</cite></div>
+</div></div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq bg2 ov">
+<div class="ctn">
+<div class="faq-h"><h2 class="sh rv">Common questions</h2></div>
+<div class="faq-item rv"><div class="faq-q"><h3>I barely have any money — is this even for me?</h3><svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Especially for you. Credit Halo is built for students starting from zero. The community is full of people in the same boat.</p></div></div>
+<div class="faq-item rv d1"><div class="faq-q"><h3>How is this different from Reddit personal finance?</h3><svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Reddit is anonymous chaos. Credit Halo has real tools, daily lessons, peer benchmarks, and verified students at real universities.</p></div></div>
+<div class="faq-item rv d2"><div class="faq-q"><h3>Will my financial info be shared?</h3><svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Never. All community data is anonymized. Your finances are private unless you choose to share.</p></div></div>
+<div class="faq-item rv d3"><div class="faq-q"><h3>Can I actually build wealth in college?</h3><svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Yes. Students who start at 20 have a 10-year head start. Compound interest doesn't care about your GPA.</p></div></div>
+<div class="faq-item rv d4"><div class="faq-q"><h3>When does it launch?</h3><svg class="faq-chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a"><p>Fall 2026. Early waitlist members get lifetime free access and help shape the product.</p></div></div>
+</div>
+</section>
+
+<!-- ═══ CTA ═══ -->
+<section class="cta bg1 ov dg">
+<div class="cta-glow"></div>
+<div class="rings rr"><div class="ro"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="1.5" stroke-linecap="round"/></svg></div><div class="rm"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#13AB96" stroke-width="2" stroke-linecap="round"/></svg></div><div class="ri"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="3" stroke-linecap="round"/></svg></div></div>
+<div class="ctn"><div class="cta-inner">
+<h2 class="sh rv">Start building your wealth.<br>Five minutes at a time.</h2>
+<p class="rv d1">Early members get lifetime free access to every tool, every lesson, and the entire community. Launching Fall 2026.</p>
+<div class="wl rv d2"><form class="wf" id="wf2"><input type="email" id="ei2" placeholder="you@college.edu" required autocomplete="email"><button class="btn" type="submit">Join the Waitlist</button></form><div class="fm" id="fm2"></div><div class="fn">No spam. No selling your data. Just a smarter way to build wealth.</div><div class="wlc" id="wlc2"></div></div>
+</div></div>
+</section>
+
+<footer class="foot"><div class="cw"><div class="foot-inner">
+<div class="foot-b"><svg viewBox="0 0 100 100" fill="none"><path d="M30.87 85.36A40 40 0 1 1 69.13 85.36" stroke="#C9AA4D" stroke-width="9" stroke-linecap="round"/></svg><span>Credit Halo</span></div>
+<div class="foot-r"><a href="https://linkedin.com/company/credithalo" target="_blank" rel="noopener" class="foot-a">LinkedIn</a><a href="mailto:hello@credithalo.app" class="foot-a">Contact</a><span class="foot-c">© 2026 Credit Halo</span></div>
+</div></div></footer>
+
+<script>
+// reveal
+const ro=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');ro.unobserve(e.target)}})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(el=>ro.observe(el));
+
+// nav scroll
+window.addEventListener('scroll',()=>{document.getElementById('nw').classList.toggle('scrolled',scrollY>30)},{passive:true});
+
+// nav pulse
+setInterval(()=>{const b=document.getElementById('navBtn');b.style.animation='bp .8s ease';setTimeout(()=>b.style.animation='',800)},5000);
+
+// smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+
+// cursor glow
+const cg=document.getElementById('cg');if(window.matchMedia('(hover:hover)').matches){cg.style.display='block';document.addEventListener('mousemove',e=>{cg.style.left=e.clientX+'px';cg.style.top=e.clientY+'px'})}
+
+// ticker
+(function(){const w=['BUDGETING','CREDIT SCORE','INVESTING','COMMUNITY','WEALTH','LESSONS','SAVINGS','NET WORTH','STREAKS','FINANCIAL LITERACY','PEER INSIGHTS','AI GOALS'];const t=document.getElementById('tt');let h='';for(let r=0;r<4;r++)w.forEach(x=>{h+='<span class="tk-i">'+x+'</span><span class="tk-d">\u25CF</span>'});t.innerHTML=h})();
+
+// calc
+const sl=document.getElementById('cs');
+function cu(){const m=parseInt(sl.value),r=.07/12;document.getElementById('ca').innerHTML='$'+m+'<small>/mo</small>';sl.style.setProperty('--pct',((m-5)/495*100)+'%');const fv=n=>Math.round(m*((Math.pow(1+r,n*12)-1)/r));document.getElementById('c1').textContent='$'+fv(1).toLocaleString();document.getElementById('c5').textContent='$'+fv(5).toLocaleString();document.getElementById('c10').textContent='$'+fv(10).toLocaleString();document.getElementById('ch').textContent='$'+Math.round(fv(10)*1.33).toLocaleString()}
+sl.addEventListener('input',cu);cu();
+
+// stat counters
+function fmt(n,s){return s?n.toLocaleString('en-US'):n.toString()}
+const co=new IntersectionObserver(es=>{es.forEach(e=>{if(!e.isIntersecting)return;const el=e.target;if(el.dataset.counted)return;const to=parseInt(el.dataset.to);if(!to)return;el.dataset.counted='1';const pre=el.dataset.pre||'',suf=el.dataset.suf||'',sep=el.hasAttribute('data-sep'),dur=2000,st=performance.now();(function t(now){const p=Math.min((now-st)/dur,1),v=Math.round((1-Math.pow(1-p,3))*to);el.textContent=pre+fmt(v,sep)+suf;if(p<1)requestAnimationFrame(t)})(performance.now())})},{threshold:.4});
+document.querySelectorAll('.sb-n[data-to]').forEach(el=>co.observe(el));
+
+// phone
+(function(){const ss=[document.getElementById('ps1'),document.getElementById('ps2'),document.getElementById('ps3')];let c=0;
+function anim(i){if(i===0)document.getElementById('pgf').style.width=document.getElementById('pgf').dataset.w;if(i===2){document.getElementById('psg').classList.add('on');let v=0;const dur=1800,st=performance.now();(function t(now){const p=Math.min((now-st)/dur,1);v=Math.round((1-Math.pow(1-p,3))*780);document.getElementById('pgn').textContent=v;if(p<1)requestAnimationFrame(t)})(performance.now())}}
+function next(){ss[c].classList.remove('active');if(c===0)document.getElementById('pgf').style.width='0%';if(c===2)document.getElementById('psg').classList.remove('on');c=(c+1)%3;ss[c].classList.add('active');anim(c)}
+const po=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){anim(0);setInterval(next,4000);po.unobserve(e.target)}})},{threshold:.3});po.observe(document.getElementById('pm'))})();
+
+// faq
+document.querySelectorAll('.faq-q').forEach(q=>{q.addEventListener('click',()=>{const i=q.parentElement;document.querySelectorAll('.faq-item').forEach(x=>{if(x!==i)x.classList.remove('open')});i.classList.toggle('open')})});
+
+// waitlist
+async function hs(e,iid,mid){e.preventDefault();const i=document.getElementById(iid),m=document.getElementById(mid),b=e.target.querySelector('button'),em=i.value.trim();if(!em)return;b.disabled=true;b.textContent='Joining...';m.textContent='';m.className='fm';try{const r=await fetch('/api/waitlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em})});const d=await r.json();if(r.ok){m.textContent="You're in! We'll be in touch soon. \u2728";m.className='fm ok';i.value='';lc()}else if(r.status===409){m.textContent="You're already on the list! \ud83d\ude4c";m.className='fm ok'}else{m.textContent=d.error||'Something went wrong.';m.className='fm err'}}catch{m.textContent='Connection error.';m.className='fm err'}b.disabled=false;b.textContent='Join the Waitlist'}
+document.getElementById('wf1').addEventListener('submit',e=>hs(e,'ei1','fm1'));
+document.getElementById('wf2').addEventListener('submit',e=>hs(e,'ei2','fm2'));
+
+// count
+async function lc(){try{const r=await fetch('/api/waitlist/count');const d=await r.json();if(d.count>0){const t='\ud83d\udd25 '+d.count+' student'+(d.count===1?'':'s')+' already on the waitlist';document.getElementById('wlc').textContent=t;document.getElementById('wlc2').textContent=t}}catch{}}lc();
+</script>
+</body>
+</html>
